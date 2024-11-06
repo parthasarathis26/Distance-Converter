@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Converter</title>
+    <style>
+/* Global Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #81d6f3, #712fd3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+h1 {
+    font-size: 3em; /* Increase font size */
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    position: absolute; /* Position it absolutely */
+    top: 20px; /* Move it down slightly from the top */
+    width: 100%; /* Center align the heading */
+}
+form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+label {
+    font-size: 1em;
+    margin-top: 10px;
+    display: block;
+}
+input, select {
+    padding: 8px;
+    font-size: 1em;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #010101;
+    text-align: center;
+    font-weight: bold;
+}
+    </style>
+</head>
+<body>
+
+    <h1>Distance Converter</h1>
+    <form id="convertForm">
+        <label for="value">Enter Value:</label>
+        <input type="number" id="value" name="value" step="any" required>
+
+        <label for="from_unit">From Unit:</label>
+        <select id="from_unit" name="from_unit" required>
+            <option value="cm">Centimeters</option>
+            <option value="mm">Millimeters</option>
+            <option value="inches">Inches</option>
+            <option value="km">Kilometers</option>
+            <option value="ft">Feet</option>
+            <option value="m">Meters</option>
+            <option value="yd">Yards</option>
+            <option value="mile">Miles</option>
+            <option value="dm">Decimeters</option>
+        </select>
+
+        <label for="to_unit">To Unit:</label>
+        <select id="to_unit" name="to_unit" required>
+            <option value="cm">Centimeters</option>
+            <option value="mm">Millimeters</option>
+            <option value="inches">Inches</option>
+            <option value="km">Kilometers</option>
+            <option value="ft">Feet</option>
+            <option value="m">Meters</option>
+            <option value="yd">Yards</option>
+            <option value="mile">Miles</option>
+            <option value="dm">Decimeters</option>
+        </select>
+
+        <label for="protocol">Choose Protocol:</label>
+        <select id="protocol" name="protocol" required>
+            <option value="TCP">TCP</option>
+            <option value="UDP">UDP</option>
+        </select>
+
+        <button type="submit">Convert</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        const form = document.getElementById('convertForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(form);
+            const value = formData.get('value');
+            const from_unit = formData.get('from_unit');
+            const to_unit = formData.get('to_unit');
+            const protocol = formData.get('protocol');
+
+            fetch('/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    value: value,
+                    from_unit: from_unit,
+                    to_unit: to_unit,
+                    protocol: protocol
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.error) {
+                    resultDiv.textContent = 'Error: ' + data.error;
+                } else {
+                    resultDiv.textContent = `Converted Value: ${data.converted_value} (${data.protocol})`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
